@@ -1064,14 +1064,14 @@ if '_pending_random_init' in st.session_state and st.session_state._pending_rand
     st.session_state.init_x = _ri['init_x']
     st.session_state.init_y = _ri['init_y']
     del st.session_state._pending_random_init
-    st.rerun()
+    
 if '_pending_preset' in st.session_state and st.session_state._pending_preset:
     _preset = st.session_state._pending_preset
     for _k, _v in _preset.items():
         if _k != 'func':
             st.session_state[_k] = _v
     del st.session_state._pending_preset
-    st.rerun()
+    
 
 mode = st.radio("选择模式", ["⚡ 即时预览", "📊 多配置对比"], horizontal=True)
 
