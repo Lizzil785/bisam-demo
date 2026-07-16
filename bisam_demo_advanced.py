@@ -1363,13 +1363,13 @@ else:
             if st.button("⏹ 停止", key="stop_cmp_play", disabled=not compare_auto_play):
                 st.session_state._pending_compare_stop = True
                 st.rerun()
-   
-    with st.expander("📌 各配置参数详情", expanded=False):
+                
+        with st.expander("📌 各配置参数详情", expanded=False):
             param_table = []
             for i, res in enumerate(results):
                 cfg = res['config']
                 param_table.append({
-                    "": f"Run {i+1}",
+                    "": f"Run {i + 1}",
                     "函数": cfg['func'],
                     "优化器": cfg['base_opt'],
                     "lr": cfg['lr'],
@@ -1392,7 +1392,7 @@ else:
             for j, i in enumerate(range(row_start, row_end)):
                 res = results[i]
                 with metric_cols[j]:
-                    st.metric(f"Run {i+1}", f"{res['loss'][-1]:.6f}",
+                    st.metric(f"Run {i + 1}", f"{res['loss'][-1]:.6f}",
                               delta=f"Δ{res['loss'][-1] - res['loss'][0]:.4f}", delta_color="inverse")
 
         is_cmp_playing = compare_auto_play and step_idx < min_steps
@@ -1410,7 +1410,7 @@ else:
         for i, res in enumerate(results):
             cfg = res['config']
             table_data.append({
-                "运行": f"Run {i+1}",
+                "运行": f"Run {i + 1}",
                 "优化器": cfg['base_opt'],
                 "学习率": cfg['lr'],
                 "ρ": cfg['rho'],
@@ -1433,7 +1433,7 @@ else:
                 st.markdown(generate_compare_analysis(results))
 
             for i, res in enumerate(results):
-                with st.expander(f"📝 Run {i+1} 详细分析"):
+                with st.expander(f"📝 Run {i + 1} 详细分析"):
                     st.markdown(generate_single_analysis(res))
 
         if is_cmp_playing:
@@ -1445,6 +1445,6 @@ else:
             st.session_state._compare_auto_advance = False
     else:
         st.info("👈 请先在左侧配置参数，点击「添加配置」保存，然后点击「开始对比优化」。")
-
+   
 st.markdown("---")
 st.caption("💡 即时预览：调参即刷新，自动保存历史可前后对比 | 多配置对比：保存多个配置一次性对比 | 支持 JSON 导入/导出配置")
