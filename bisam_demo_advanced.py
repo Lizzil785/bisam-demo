@@ -1046,6 +1046,19 @@ if st.session_state._compare_auto_advance:
         st.session_state.compare_step = _ccur + 1
     else:
         st.session_state._compare_auto_advance = False
+
+def _on_random_init():
+    info = TEST_FUNCTIONS[st.session_state.func]
+    st.session_state._pending_random_init = {
+        'init_x': round(np.random.uniform(*info['x_range']), 2),
+        'init_y': round(np.random.uniform(*info['y_range']), 2),
+    }
+
+def _on_load_preset():
+    func_name = st.session_state.func
+    if func_name in PRESET_CONFIGS:
+        st.session_state._pending_preset = PRESET_CONFIGS[func_name].copy()
+
 if '_pending_random_init' in st.session_state and st.session_state._pending_random_init:
     _ri = st.session_state._pending_random_init
     st.session_state.init_x = _ri['init_x']
@@ -1105,19 +1118,12 @@ with st.sidebar:
     st.markdown("**📍 起始位置**")
     init_x = st.number_input("初始 x", value=2.5, key="init_x")
     init_y = st.number_input("初始 y", value=2.5, key="init_y")
-    if st.button("🎲 随机初始位置", key="random_init"):
-        info = TEST_FUNCTIONS[func]
-        st.session_state._pending_random_init = {
-            'init_x': round(np.random.uniform(*info['x_range']), 2),
-            'init_y': round(np.random.uniform(*info['y_range']), 2),
-        }
-        st.rerun()
-
+    if st.button("🎲 随机初始位置", key="random_init", on_click=_on_random_init):
+        pass
     st.markdown("---")
     if func in PRESET_CONFIGS:
-        if st.button(f"📋 加载 {func} 推荐配置", key="load_preset", use_container_width=True):
-            st.session_state._pending_preset = PRESET_CONFIGS[func].copy()
-            st.rerun()
+        if st.button(f"📋 加载 {func} 推荐配置", key="load_preset", use_container_width=True, on_click=_on_load_preset):
+            pass
 
     current_config = {
         'base_opt': base_opt, 'lr': lr, 'rho': rho,
