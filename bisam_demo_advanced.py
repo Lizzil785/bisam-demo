@@ -1039,6 +1039,11 @@ if st.session_state._preview_auto_advance:
     else:
         st.session_state._preview_auto_advance = False
 
+if '_pending_preview_stop' in st.session_state and st.session_state._pending_preview_stop:
+    st.session_state._preview_auto_advance = False
+    st.session_state.preview_step = st.session_state.get('_preview_max_step', 0)
+    del st.session_state._pending_preview_stop
+
 if st.session_state._compare_auto_advance:
     _cmax = st.session_state.get('_compare_max_step', 0)
     _ccur = st.session_state.get('compare_step', 0)
@@ -1046,6 +1051,10 @@ if st.session_state._compare_auto_advance:
         st.session_state.compare_step = _ccur + 1
     else:
         st.session_state._compare_auto_advance = False
+if '_pending_compare_stop' in st.session_state and st.session_state._pending_compare_stop:
+    st.session_state._compare_auto_advance = False
+    st.session_state.compare_step = st.session_state.get('_compare_max_step', 0)
+    del st.session_state._pending_compare_stop
 
 def _on_random_init():
     info = TEST_FUNCTIONS[st.session_state.func]
@@ -1064,14 +1073,14 @@ if '_pending_random_init' in st.session_state and st.session_state._pending_rand
     st.session_state.init_x = _ri['init_x']
     st.session_state.init_y = _ri['init_y']
     del st.session_state._pending_random_init
-    
+
 if '_pending_preset' in st.session_state and st.session_state._pending_preset:
     _preset = st.session_state._pending_preset
     for _k, _v in _preset.items():
         if _k != 'func':
             st.session_state[_k] = _v
     del st.session_state._pending_preset
-    
+
 
 mode = st.radio("选择模式", ["⚡ 即时预览", "📊 多配置对比"], horizontal=True)
 
@@ -1186,8 +1195,7 @@ if mode == "⚡ 即时预览":
         smooth_toggle = st.checkbox("📈 EMA平滑", key="smooth_preview", value=False)
     with ctrl_col5:
         if st.button("⏹ 停止", key="stop_play", disabled=not auto_play):
-            st.session_state._preview_auto_advance = False
-            st.session_state.preview_step = max_step
+            st.session_state._pending_preview_stop = True
             st.rerun()
 
     st.info(f"**第 {step_idx}/{max_step} 步** | "
@@ -1353,11 +1361,10 @@ else:
             cmp_smooth = st.checkbox("📈 EMA平滑", key="smooth_compare", value=False)
         with ctrl_col5:
             if st.button("⏹ 停止", key="stop_cmp_play", disabled=not compare_auto_play):
-                st.session_state._compare_auto_advance = False
-                st.session_state.compare_step = min_steps
+                st.session_state._pending_compare_stop = True
                 st.rerun()
-
-        with st.expander("📌 各配置参数详情", expanded=False):
+   
+    with st.expander("📌 各配置参数详情", expanded=False):
             param_table = []
             for i, res in enumerate(results):
                 cfg = res['config']
